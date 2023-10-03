@@ -60,25 +60,47 @@ class Board
   end
 
   def completed_diagonal?
-    is_complete = false
-
     if @board_status[0][0] == 'x' && @board_status[1][1] == 'x' && @board_status[2][2] == 'x'
-      is_complete = true
+      true
     elsif @board_status[0][0] == 'o' && @board_status[1][1] == 'o' && @board_status[2][2] == 'o'
-      is_complete = true
+      true
     elsif @board_status[0][2] == 'x' && @board_status[1][1] == 'x' && @board_status[2][0] == 'x'
-      is_complete = true
+      true
     elsif @board_status[0][2] == 'o' && @board_status[1][1] == 'o' && @board_status[2][0] == 'o'
-      is_complete = true
-    end
-
-    is_complete
+      true
+    else false end
   end
 end
 
-board = Board.new
-board.add_o(1, 1)
-board.add_o(0, 2)
-board.add_o(2, 0)
-puts board
-puts board.game_over?
+class Game
+  def initialize
+    @board = Board.new
+    @turn_number = 1
+  end
+
+  def play_game
+    until @board.game_over?
+      puts @board
+      make_move(1)
+    end
+    puts @board
+    puts "Game over!"
+  end
+
+  def make_move(player_number)
+    made_move = false
+    until made_move
+      puts "Player #{player_number}, type the row number where you would like to play"
+      row = gets.to_i - 1
+      puts 'Now type the column number where you would like to play'
+      column = gets.to_i - 1
+      if @board.board_status[row, column]
+        @board.add_x(row, column)
+        made_move = true
+      end
+    end
+  end
+end
+
+game = Game.new
+game.play_game
