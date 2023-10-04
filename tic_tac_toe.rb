@@ -1,5 +1,4 @@
 class Board
-  attr_accessor :board_status
 
   LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]].freeze
 
@@ -31,6 +30,18 @@ class Board
   def board_full?
     @board_status[1..9].none?(&:!)
   end
+end
+
+class Player
+  attr_accessor :current_marker
+
+  def initialize(name)
+    @name = name
+  end
+end
+
+class HumanPlayer < Player
+  
 end
 
 class Game
