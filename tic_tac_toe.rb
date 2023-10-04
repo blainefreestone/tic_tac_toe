@@ -1,17 +1,21 @@
 class Board
   attr_accessor :board_status
 
+  LINES = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6, 9], [1, 5, 9], [3, 5, 7]].freeze
+
   def initialize
-    @board_status = Array.new(3) { Array.new(3, '-') }
+    @board_status = Array.new(10)
   end
 
-  def to_s
-    row_strings = []
-    horizontal_line_string = "-----------\n"
-    @board_status.each do |row_array|
-      row_strings.push " #{row_array[0]} | #{row_array[1]} | #{row_array[2]}\n"
-    end
-    row_strings[0] + horizontal_line_string + row_strings[1] + horizontal_line_string + row_strings[2]
+  def board_in_text
+    row_seperator = '---+---+---'
+    column_seperator = ' | '
+    rows = LINES[0..2]
+
+    position_label = ->(position) { @board_status[position] || '-' }
+    full_row = ->(row) { row.map(&position_label).join(column_seperator) }
+
+    ' ' + rows.map(&full_row).join(" \n" + row_seperator + "\n ")
   end
 
   def add_marker(row_index, column_index, marker_type = 'x')
@@ -97,5 +101,5 @@ class Game
   end
 end
 
-game = Game.new
-game.play_game
+board = Board.new
+puts board.board_in_text
