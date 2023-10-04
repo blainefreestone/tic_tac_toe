@@ -14,12 +14,8 @@ class Board
     row_strings[0] + horizontal_line_string + row_strings[1] + horizontal_line_string + row_strings[2]
   end
 
-  def add_x(row_index, column_index)
-    @board_status[row_index][column_index] = 'x'
-  end
-
-  def add_o(row_index, column_index)
-    @board_status[row_index][column_index] = 'o'
+  def add_marker(row_index, column_index, marker_type = 'x')
+    @board_status[row_index][column_index] = marker_type
   end
 
   def game_over?
@@ -44,11 +40,17 @@ class Board
   end
 
   def completed_column?
-    column_arrays = @board_status.reduce(Array.new(3) { [] }) do |result_array, row_array|
+    # column_arrays = @board_status.reduce(Array.new(3) { [] }) do |result_array, row_array|
+    #   result_array[0].push(row_array[0])
+    #   result_array[1].push(row_array[1])
+    #   result_array[2].push(row_array[2])
+    #   result_array
+    # end
+
+    column_arrays = @board_status.each_with_object(Array.new(3) { [] }) do |row_array, result_array|
       result_array[0].push(row_array[0])
       result_array[1].push(row_array[1])
       result_array[2].push(row_array[2])
-      result_array
     end
 
     completed_array?(column_arrays)
@@ -77,7 +79,7 @@ class Game
       make_move(2)
     end
     puts @board
-    puts "Game over!"
+    puts 'Game over!'
   end
 
   def make_move(player_number)
@@ -88,7 +90,7 @@ class Game
       puts 'Now type the column number where you would like to play'
       column = gets.to_i - 1
       unless @board.board_status[row, column] == '-'
-        player_number == 1 ? @board.add_x(row, column) : @board.add_o(row, column)
+        player_number == 1 ? @board.add_marker(row, column, 'x') : @board.add_marker(row, column, 'o')
         made_move = true
       end
     end
