@@ -17,65 +17,97 @@ class Board
     ' ' + rows.map(&full_row).join(" \n" + row_seperator + "\n ")
   end
 
-  def add_marker(position, marker_type)
-    @board_status[position] = marker_type
+  def add_marker(position, player)
+    @board_status[position] = player.current_marker
   end
 
   def player_won?(player)
     LINES.any? do |line|
-      line.all { |position| @board_status[position] == player.marker }
+      line.all { |position| @board_status[position] == player.current_marker }
     end
   end
 
   def board_full?
     @board_status[1..9].none?(&:!)
   end
+
+  def position_empty?(position)
+    !@board_status[position]
+  end
+
+  def position_exists?(position)
+    return false if position.zero?
+
+    @board_status[position]
+  end
 end
 
 class Player
-  attr_accessor :current_marker
+  attr_accessor :current_marker, :win_count
+  attr_reader :name
 
   def initialize(name)
     @name = name
+    @win_count = 0
   end
-end
-
-class HumanPlayer < Player
-  
 end
 
 class Game
-  def initialize
+  def initialize(first_player, second_player)
     @board = Board.new
-    @turn_number = 1
+    @first_player = first_player
+    @second_player = second_player
+
+    @first_player.current_marker = 'x'
+    @second_player.current_marker = 'o'
   end
 
-  def play_game
-    until @board.game_over?
-      puts @board
-      make_move(1)
-      puts @board
-      make_move(2)
-    end
-    puts @board
-    puts 'Game over!'
-  end
+  def make_move(player)
+    puts @board.board_in_text
+    puts "#{player.name}, where would you like to play?"
 
-  def make_move(player_number)
-    made_move = false
-    until made_move
-      puts "Player #{player_number}, type the row number where you would like to play"
-      row = gets.to_i - 1
-      puts 'Now type the column number where you would like to play'
-      column = gets.to_i - 1
-      unless @board.board_status[row, column] == '-'
-        player_number == 1 ? @board.add_marker(row, column, 'x') : @board.add_marker(row, column, 'o')
-        made_move = true
+    Kernel.loop do
+      position = gets.to_i
+      if @board.position_empty?(position) && @board.position_exists?(position)
+        @board.add_marker(position, player)
+        break
       end
+      puts 'That position is not valid. Please try again.'
     end
   end
+
+  def play
+    make_move(@first_player)
+    make_move(@second_player)
+    make_move(@first_player)
+  end
+  # def play_game
+  #   until @board.game_over?
+  #     puts @board
+  #     make_move(1)
+  #     puts @board
+  #     make_move(2)
+  #   end
+  #   puts @board
+  #   puts 'Game over!'
+  # end
+
+  # def make_move(player_number)
+  #   made_move = false
+  #   until made_move
+  #     puts "Player #{player_number}, type the row number where you would like to play"
+  #     row = gets.to_i - 1
+  #     puts 'Now type the column number where you would like to play'
+  #     column = gets.to_i - 1
+  #     unless @board.board_status[row, column] == '-'
+  #       player_number == 1 ? @board.add_marker(row, column, 'x') : @board.add_marker(row, column, 'o')
+  #       made_move = true
+  #     end
+  #   end
+  # end
 end
 
-board = Board.new
-puts board.board_in_text
-puts board.board_full?
+player1 = Player.new("Blaine")
+player2 = Player.new("Destiny")
+game = Game.new(player1, player2)
+game.play
